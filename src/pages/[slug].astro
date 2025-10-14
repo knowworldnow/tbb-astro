@@ -158,9 +158,7 @@ const faq = faqParsed;
                     <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                       {faqItem.question}
                     </h4>
-                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-                      {faqItem.answer}
-                    </p>
+                    <div class="text-gray-700 dark:text-gray-300 leading-relaxed prose dark:prose-invert" set:html={faqItem.answer}></div>
                   </div>
                 ))}
               </div>

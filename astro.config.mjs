@@ -5,6 +5,7 @@ import tailwind from '@astrojs/tailwind';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://thebetblog.com',
+  trailingSlash: 'always',
   integrations: [react(), tailwind()],
   output: 'static',
   build: {

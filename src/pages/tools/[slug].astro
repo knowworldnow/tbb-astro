@@ -34,13 +34,30 @@ if (!tool) {
 const relatedTools = await getRelatedTools(slug);
 const seo = generateToolSEO(tool, 'https://thebetblog.com');
 
+// Parse JSON fields from Sanity for graceful rendering
+function parseJsonArray(value: unknown) {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+const keyTakeaways = parseJsonArray((tool as any).keyTakeaways);
+const faqParsed = parseJsonArray((tool as any).faq);
+
 const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Tools', url: '/tools/' },
   { name: tool.title, url: `/tools/${slug}/` }
 ];
 
-const faq = tool.faq || [];
+const faq = faqParsed;
 ---
 
 <Layout seo={seo} breadcrumbs={breadcrumbs} faq={faq}>
@@ -106,6 +123,24 @@ const faq = tool.faq || [];
         <ToolRenderer toolName={tool.toolComponent} />
       </div>
 
+      <!-- Key Takeaways -->
+      {keyTakeaways && Array.isArray(keyTakeaways) && keyTakeaways.length > 0 && (
+        <div class="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-xl p-6 mb-12">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <span class="text-2xl mr-2">🎯</span>
+            Key Takeaways
+          </h3>
+          <ul class="space-y-2">
+            {keyTakeaways.map((takeaway) => (
+              <li class="flex items-start space-x-3">
+                <span class="text-emerald-600 mt-1">✓</span>
+                <span class="text-gray-700 dark:text-gray-300">{takeaway}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <!-- Description -->
       {tool.description && (
         <div class="prose prose-lg max-w-none dark:prose-invert mb-12">
@@ -114,11 +149,11 @@ const faq = tool.faq || [];
       )}
 
       <!-- FAQ -->
-      {tool.faq && Array.isArray(tool.faq) && tool.faq.length > 0 && (
+      {faq && Array.isArray(faq) && faq.length > 0 && (
         <div class="mt-2 pt-8 border-t border-gray-200 dark:border-gray-700 mb-12">
           <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">❓ Frequently Asked Questions</h3>
           <div class="space-y-4">
-            {tool.faq.map((faqItem) => (
+            {faq.map((faqItem) => (
               <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">{faqItem.question}</h4>
                 <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{faqItem.answer}</p>

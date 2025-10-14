@@ -1,0 +1,38 @@
+# The Bet Blog
+
+> Expert betting guides, free online calculators, and comprehensive gambling insights for savvy bettors worldwide. Your trusted source for matched betting strategies, odds analysis, casino games, and sports betting tools.
+
+## Core Guides
+- /matched-betting-guide/
+- /how-to-calculate-betting-odds/
+- /sports-betting-strategies/
+- /casino-games-guide/
+- /value-betting-explained/
+- /arbitrage-betting-guide/
+
+## Tools & Calculators
+- /tools/matched-betting-calculator/
+- /tools/2up-calculator/
+- /tools/acca-matched-betting-calculator/
+- /tools/blackjack-strategy-calculator/
+- /tools/each-way-matcher/
+- /tools/early-payout-calculator/
+
+## Resources & FAQs
+- /is-matched-betting-legal/
+- /does-matched-betting-affect-credit-score/
+- /how-do-bookies-know-you-are-matched-betting/
+- /what-is-value-betting/
+- /how-to-calculate-implied-probability/
+- /betting-odds-explained/
+
+## Educational Content
+- /betting-terminology-guide/
+- /understanding-betting-odds/
+- /bankroll-management-strategies/
+- /risk-management-in-betting/
+- /psychology-of-successful-betting/
+
+## About & Contact
+- /about-us/
+- /contact-us/ 

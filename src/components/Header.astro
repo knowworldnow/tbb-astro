@@ -1,0 +1,150 @@
+---
+// Header component with navigation
+import { Image } from 'astro:assets';
+---
+
+<header class="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a href="/" class="flex items-center space-x-3">
+          <Image 
+            src="/The Bet Blog Logo.webp" 
+            alt="The Bet Blog" 
+            class="h-12 w-auto md:h-14"
+            width={64}
+            height={64}
+            format="webp"
+          />
+          <span class="hidden sm:inline text-xl md:text-2xl font-bold text-gray-900 dark:text-white">The Bet Blog</span>
+        </a>
+      </div>
+      
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-6">
+        <a href="/" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+          Home
+        </a>
+        <a href="/posts/" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+          Posts
+        </a>
+        <a href="/tools/" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+          Tools
+        </a>
+        <a href="/about-us/" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+          About
+        </a>
+        <!-- Search -->
+        <div class="relative ml-2">
+          <form action="/search/" method="get" class="relative">
+            <input
+              id="header-search-input"
+              type="search"
+              name="q"
+              placeholder="Search posts & tools..."
+              autocomplete="off"
+              class="w-56 md:w-64 lg:w-72 rounded-md border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              aria-label="Search posts and tools"
+            />
+            <button type="submit" class="absolute right-1 top-1.5 px-2 py-1 text-sm text-white bg-primary-600 hover:bg-primary-700 rounded">
+              Search
+            </button>
+          </form>
+          <div id="header-search-suggestions" class="absolute z-50 mt-1 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg hidden">
+            <ul class="max-h-80 overflow-auto divide-y divide-gray-100 dark:divide-gray-800"></ul>
+          </div>
+        </div>
+      </nav>
+      
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <button 
+          type="button" 
+          class="mobile-menu-button bg-gray-100 dark:bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+        >
+          <span class="sr-only">Open main menu</span>
+          <!-- Hamburger icon -->
+          <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Navigation -->
+    <div class="mobile-menu hidden md:hidden" id="mobile-menu">
+      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 dark:bg-gray-800 rounded-lg mt-2">
+        <a href="/" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 block px-3 py-2 rounded-md text-base font-medium">
+          Home
+        </a>
+        <a href="/posts/" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 block px-3 py-2 rounded-md text-base font-medium">
+          Posts
+        </a>
+        <a href="/tools/" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 block px-3 py-2 rounded-md text-base font-medium">
+          Tools
+        </a>
+        <a href="/about-us/" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 block px-3 py-2 rounded-md text-base font-medium">
+          About
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Mobile menu toggle
+  document.addEventListener('DOMContentLoaded', function() {
+    // Autocomplete search
+    const input = document.getElementById('header-search-input');
+    const box = document.getElementById('header-search-suggestions');
+    const list = box ? box.querySelector('ul') : null;
+    let debounceId;
+    function hideBox(){ if(box) box.classList.add('hidden'); }
+    function showBox(){ if(box) box.classList.remove('hidden'); }
+    async function fetchSuggestions(q){
+      const res = await fetch(`/api/search.json?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      return data.items || [];
+    }
+    function render(items){
+      if(!list) return;
+      if(!items.length){ list.innerHTML = '<li class="p-3 text-sm text-gray-500">No results</li>'; return; }
+      list.innerHTML = items.map((it) => `
+        <li>
+          <a href="${it.url}" class="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800">
+            <span class="text-sm text-gray-900 dark:text-gray-100">${it.title}</span>
+            <span class="ml-3 inline-block text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">${it.type}</span>
+          </a>
+        </li>`).join('');
+    }
+    if(input && box){
+      input.addEventListener('input', () => {
+        const q = input.value.trim();
+        clearTimeout(debounceId);
+        if(q.length < 2){ hideBox(); return; }
+        debounceId = setTimeout(async () => {
+          const items = await fetchSuggestions(q);
+          render(items);
+          showBox();
+        }, 200);
+      });
+      document.addEventListener('click', (e) => {
+        if(!box.contains(e.target) && e.target !== input){ hideBox(); }
+      });
+      input.addEventListener('focus', () => { if(list && list.children.length) showBox(); });
+    }
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    
+    if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener('click', function() {
+        const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+        mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+  });
+</script>

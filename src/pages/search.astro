@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { client } from '../lib/sanity';
+
+const { q = '' } = Astro.url.searchParams;
+const query = String(q).trim();
+
+let results: Array<any> = [];
+
+if (query.length >= 2) {
+  const groq = `{
+    "posts": *[_type == "post" && defined(publishedAt) && (title match $q || metaDescription match $q)] | order(publishedAt desc)[0...20]{
+      _id, title, slug, metaDescription, mainImage{image,alt,caption}, publishedAt
+    },
+    "tools": *[_type == "tool" && defined(publishedAt) && (title match $q || metaDescription match $q)] | order(publishedAt desc)[0...20]{
+      _id, title, slug, metaDescription, mainImage{image,alt,caption}, publishedAt, toolComponent
+    }
+  }`;
+  const data = await client.fetch(groq, { q: `*${query}*` });
+  results = [
+    ...(data.posts || []).map((d: any) => ({ type: 'post', ...d })),
+    ...(data.tools || []).map((d: any) => ({ type: 'tool', ...d })),
+  ];
+}
+
+const seo = {
+  title: query ? `Search: ${query} | The Bet Blog` : 'Search | The Bet Blog',
+  description: 'Search posts and tools on The Bet Blog',
+  canonical: `https://thebetblog.com/search/${query ? `?q=${encodeURIComponent(query)}` : ''}`,
+};
+---
+
+<Layout seo={seo}>
+  <section class="py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold mb-6">Search</h1>
+      <form action="/search/" method="get" class="mb-8 flex gap-2">
+        <input type="search" name="q" value={query} placeholder="Search posts & tools..." class="flex-1 rounded-md border border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-3 py-2 text-sm" />
+        <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md">Search</button>
+      </form>
+
+      {query && results.length === 0 && (
+        <p class="text-gray-600 dark:text-gray-300">No results found for "{query}".</p>
+      )}
+
+      {results.length > 0 && (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {results.map((item) => (
+            <a href={item.type === 'post' ? `/${item.slug.current}/` : `/tools/${item.slug.current}/`} class="block p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-400">
+              <div class="text-xs uppercase tracking-wide text-gray-500 mb-1">{item.type === 'post' ? 'Post' : 'Tool'}</div>
+              <h2 class="text-lg font-semibold mb-1">{item.title}</h2>
+              {item.metaDescription && <p class="text-sm text-gray-600 dark:text-gray-300">{item.metaDescription}</p>}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</Layout>
+
+

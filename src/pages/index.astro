@@ -1,0 +1,134 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getPosts, getTools } from '../lib/sanity';
+import { generatePageSEO } from '../lib/seo';
+import HeroSection from '../components/HeroSection.astro';
+import PostCard from '../components/PostCard.astro';
+import ToolCard from '../components/ToolCard.astro';
+import FeaturedPost from '../components/FeaturedPost.astro';
+
+// Fetch data
+const [posts, tools] = await Promise.all([
+  getPosts({ limit: 7 }),
+  getTools({ limit: 6 })
+]);
+
+// Generate SEO data
+const seo = generatePageSEO(
+  'The Bet Blog - Expert Betting Strategies, Free Tools & Guides',
+  'Expert betting strategies, free calculators, and trusted bookmaker reviews. Learn matched betting, arbitrage, and casino games with our comprehensive guides and tools.',
+  '/'
+);
+
+// Additional structured data for homepage
+const additionalStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: 'The Bet Blog',
+  description: 'Your trusted source for betting strategies, odds analysis, gambling tips, casino games, sports betting insights, and betting tools.',
+  url: 'https://thebetblog.com',
+  email: 'samchyweb@gmail.com',
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'US',
+    addressRegion: 'United States',
+    addressLocality: 'Online'
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 37.0902,
+    longitude: -95.7129
+  },
+  openingHours: 'Mo-Su 00:00-23:59',
+  priceRange: 'Free',
+  areaServed: {
+    '@type': 'Country',
+    name: 'Worldwide'
+  },
+  serviceArea: {
+    '@type': 'Country',
+    name: 'Worldwide'
+  }
+};
+---
+
+<Layout seo={seo} additionalStructuredData={additionalStructuredData}>
+  <!-- Hero Section -->
+  <HeroSection />
+  
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <!-- Featured Post -->
+    {posts.length > 0 && (
+      <div class="mb-12 sm:mb-16">
+        <FeaturedPost post={posts[0]} />
+      </div>
+    )}
+    
+    <!-- Latest Posts Section -->
+    <section class="mb-12 sm:mb-16">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-3 sm:gap-0">
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          Latest Posts
+        </h2>
+        <a 
+          href="/posts/" 
+          class="text-primary-600 hover:text-primary-500 font-medium text-sm sm:text-base transition-colors"
+        >
+          View all posts →
+        </a>
+      </div>
+
+      {posts.length > 1 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {posts.slice(1).map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12">
+          <div class="text-gray-500 dark:text-gray-400">
+            <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-lg font-medium">No posts available</p>
+            <p class="text-sm">Check back later for new content</p>
+          </div>
+        </div>
+      )}
+    </section>
+
+    <!-- Featured Tools Section -->
+    <section>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-3 sm:gap-0">
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          Latest Tools
+        </h2>
+        <a 
+          href="/tools" 
+          class="text-primary-600 hover:text-primary-500 font-medium text-sm sm:text-base transition-colors"
+        >
+          View all tools →
+        </a>
+      </div>
+
+      {tools.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {tools.map((tool) => (
+            <ToolCard tool={tool} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12">
+          <div class="text-gray-500 dark:text-gray-400">
+            <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-lg font-medium">No tools available</p>
+            <p class="text-sm">Check back later for new calculators</p>
+          </div>
+        </div>
+      )}
+    </section>
+  </main>
+</Layout>

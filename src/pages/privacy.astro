@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const seo = {
+  title: 'Privacy Policy | The Bet Blog',
+  description: 'Learn how The Bet Blog collects, uses, and protects your data. Read our Privacy Policy for details on cookies, analytics, and contact information.',
+  canonical: 'https://thebetblog.com/privacy/',
+};
+---
+
+<Layout seo={seo}>
+  <section class="py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold mb-6">Privacy Policy</h1>
+      <p class="text-gray-700 dark:text-gray-300 mb-6">Last updated: {new Date().getFullYear()}</p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-3">Introduction</h2>
+      <p class="text-gray-700 dark:text-gray-300">We respect your privacy. This policy explains what data we collect, how we use it, and your choices.</p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-3">Information We Collect</h2>
+      <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1">
+        <li>Analytics data (e.g., page views, device, approximate location).</li>
+        <li>Form submissions you provide (e.g., contact or newsletter).</li>
+        <li>Cookies for basic site functionality and performance.</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mt-8 mb-3">How We Use Information</h2>
+      <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1">
+        <li>To operate and improve the website and tools.</li>
+        <li>To respond to your messages and requests.</li>
+        <li>To analyze performance and prevent abuse.</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mt-8 mb-3">Cookies</h2>
+      <p class="text-gray-700 dark:text-gray-300">You can control cookies via your browser settings. Disabling cookies may impact certain features.</p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-3">Third-Party Services</h2>
+      <p class="text-gray-700 dark:text-gray-300">We may use analytics providers and embedded third-party content subject to their policies.</p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-3">Contact</h2>
+      <p class="text-gray-700 dark:text-gray-300">For privacy requests, email us at <a href="mailto:samchyweb@gmail.com" class="underline text-primary-600">samchyweb@gmail.com</a>.</p>
+    </div>
+  </section>
+</Layout>
+
+

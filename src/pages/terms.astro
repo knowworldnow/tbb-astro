@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const seo = {
+  title: 'Terms of Service | The Bet Blog',
+  description: 'Read The Bet Blog Terms of Service. By using our site and tools, you agree to these terms, including acceptable use and disclaimers.',
+  canonical: 'https://thebetblog.com/terms/',
+};
+---
+
+<Layout seo={seo}>
+  <section class="py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold mb-6">Terms of Service</h1>
+      <p class="text-gray-700 dark:text-gray-300 mb-6">Last updated: {new Date().getFullYear()}</p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-3">Agreement to Terms</h2>
+      <p class="text-gray-700 dark:text-gray-300">By accessing or using The Bet Blog and its tools, you agree to these Terms of Service.</p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-3">Use of the Site</h2>
+      <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1">
+        <li>Tools are provided for information and educational purposes only.</li>
+        <li>No guarantee of outcomes; use at your own risk.</li>
+        <li>You are responsible for complying with local laws and bookmaker rules.</li>
+      </ul>
+
+      <h2 class="text-xl font-semibold mt-8 mb-3">Disclaimers</h2>
+      <p class="text-gray-700 dark:text-gray-300">We make no warranties. The site is provided “as is” without guarantees of accuracy or availability.</p>
+
+      <h2 class="text-xl font-semibold mt-8 mb-3">Contact</h2>
+      <p class="text-gray-700 dark:text-gray-300">Questions about these terms? Email <a href="mailto:samchyweb@gmail.com" class="underline text-primary-600">samchyweb@gmail.com</a>.</p>
+    </div>
+  </section>
+</Layout>
+
+

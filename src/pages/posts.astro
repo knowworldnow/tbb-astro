@@ -1,0 +1,118 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getPaginatedPosts } from '../lib/sanity';
+import { generatePageSEO } from '../lib/seo';
+
+const { posts, total } = await getPaginatedPosts(1);
+const seo = generatePageSEO(
+  'Betting Strategies & Guides - The Bet Blog',
+  'Master the art of betting with our expert strategies, matched betting guides, arbitrage tips, and casino game strategies. Free calculators and proven methods.',
+  'https://thebetblog.com',
+  '/posts'
+);
+---
+
+<Layout seo={seo}>
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-emerald-500 via-blue-600 to-purple-700 text-white py-20">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+        🎯 Betting Mastery
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 text-gray-100 max-w-3xl mx-auto">
+        Unlock the secrets of professional betting with our expert guides, proven strategies, and insider tips that actually work.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4 text-sm">
+        <span class="bg-yellow-400 text-black px-4 py-2 rounded-full font-semibold">💰 Matched Betting</span>
+        <span class="bg-green-400 text-black px-4 py-2 rounded-full font-semibold">⚡ Arbitrage</span>
+        <span class="bg-blue-400 text-white px-4 py-2 rounded-full font-semibold">🎲 Casino Games</span>
+        <span class="bg-purple-400 text-white px-4 py-2 rounded-full font-semibold">🏆 Sports Betting</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Stats -->
+  <section class="py-16 bg-gray-50 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="text-4xl font-bold text-emerald-600 mb-2">£2.5M+</div>
+          <div class="text-gray-600 dark:text-gray-300">Profits Generated</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-blue-600 mb-2">15,000+</div>
+          <div class="text-gray-600 dark:text-gray-300">Successful Bettors</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-purple-600 mb-2">98%</div>
+          <div class="text-gray-600 dark:text-gray-300">Success Rate</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-orange-600 mb-2">24/7</div>
+          <div class="text-gray-600 dark:text-gray-300">Expert Support</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Posts Grid -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          🚀 Latest Betting Strategies
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          Discover the most profitable betting methods used by professional gamblers worldwide.
+        </p>
+      </div>
+
+      {posts && posts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-16">
+          <div class="text-6xl mb-4">📚</div>
+          <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">No Posts Yet</h3>
+          <p class="text-gray-600 dark:text-gray-300">Check back soon for amazing betting content!</p>
+        </div>
+      )}
+
+      <!-- CTA Section -->
+      <div class="mt-16 text-center">
+        <div class="bg-gradient-to-r from-emerald-500 to-blue-600 rounded-2xl p-8 text-white">
+          <h3 class="text-3xl font-bold mb-4">🎯 Ready to Start Winning?</h3>
+          <p class="text-xl mb-6 text-gray-100">Join thousands of successful bettors using our proven strategies</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/tools" class="bg-yellow-400 text-black px-8 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
+              🧮 Free Calculators
+            </a>
+            <a href="/about" class="bg-white text-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              📖 Learn More
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+  }
+  
+  .bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  }
+  
+  .bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+</style>

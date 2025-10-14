@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://thebetblog.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_astro/
+Disallow: /node_modules/
+
+# Allow important pages
+Allow: /
+Allow: /posts/
+Allow: /tools/
+Allow: /category/
+Allow: /author/
+Allow: /about-us
+Allow: /contact-us
+Allow: /search
+
+# Allow static assets
+Allow: /favicon.ico
+Allow: /manifest.json
+Allow: /*.webp
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.svg
+Allow: /*.css
+Allow: /*.js

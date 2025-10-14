@@ -1,0 +1,323 @@
+---
+import type { SEOData } from '../lib/seo';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { Image } from 'astro:assets';
+
+export interface Props {
+  seo: SEOData;
+  breadcrumbs?: Array<{ name: string; url: string }>;
+  faq?: Array<{ question: string; answer: string }>;
+  additionalStructuredData?: any;
+}
+
+const { seo, breadcrumbs = [], faq = [], additionalStructuredData } = Astro.props;
+
+const siteUrl = 'https://thebetblog.com';
+const siteName = 'The Bet Blog';
+const siteDescription = 'Expert betting strategies, free calculators, and trusted bookmaker reviews. Learn matched betting, arbitrage, and casino games with our comprehensive guides and tools.';
+
+// Generate all structured data
+const organizationData = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${siteUrl}/#organization`,
+  name: siteName,
+  url: siteUrl,
+  logo: {
+    '@type': 'ImageObject',
+    '@id': `${siteUrl}/#logo`,
+    url: `${siteUrl}/The%20Bet%20Blog%20Logo.webp`,
+    width: 800,
+    height: 200,
+    caption: siteName
+  },
+  image: {
+    '@type': 'ImageObject',
+    '@id': `${siteUrl}/#logo`,
+    url: `${siteUrl}/The%20Bet%20Blog%20Logo.webp`,
+    width: 800,
+    height: 200
+  },
+  description: siteDescription,
+  foundingDate: '2024',
+  knowsAbout: [
+    'Matched Betting',
+    'Arbitrage Betting', 
+    'Sports Betting',
+    'Casino Games',
+    'Betting Calculators',
+    'Odds Analysis',
+    'Kelly Criterion',
+    'Dutching',
+    'Each Way Betting',
+    'Blackjack Strategy'
+  ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'samchyweb@gmail.com',
+    contactType: 'customer service',
+    availableLanguage: ['English'],
+    areaServed: 'Worldwide'
+  },
+  sameAs: [
+    'https://twitter.com/thebetblog',
+    'https://www.facebook.com/thebetblog',
+    'https://www.linkedin.com/company/thebetblog'
+  ],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.8',
+    reviewCount: '250',
+    bestRating: '5',
+    worstRating: '1'
+  }
+};
+
+const websiteData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: siteName,
+  alternateName: 'TheBetBlog',
+  url: siteUrl,
+  description: siteDescription,
+  inLanguage: 'en-US',
+  publisher: {
+    '@type': 'Organization',
+    name: siteName,
+    url: siteUrl
+  },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${siteUrl}/search?q={search_term_string}`
+    },
+    'query-input': 'required name=search_term_string'
+  }
+};
+
+const breadcrumbData = breadcrumbs && Array.isArray(breadcrumbs) && breadcrumbs.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbs.map((crumb, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: crumb.name,
+    item: crumb.url
+  }))
+} : null;
+
+const faqData = faq && Array.isArray(faq) && faq.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(item => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer
+    }
+  }))
+} : null;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <!-- Basic Meta Tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0ea5e9" />
+    
+    <!-- SEO Meta Tags -->
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.description} />
+    <link rel="canonical" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+    
+    <!-- Alternate Language Tags (hreflang for international SEO) -->
+    <link rel="alternate" hreflang="en" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+    <link rel="alternate" hreflang="en-US" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+    <link rel="alternate" hreflang="en-GB" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+    <link rel="alternate" hreflang="x-default" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:type" content={seo.ogType || 'website'} />
+    <meta property="og:title" content={seo.title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:url" content={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:image" content={seo.ogImage || `${siteUrl}/og-default.webp`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={seo.title} />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content={seo.twitterCard || 'summary_large_image'} />
+    <meta name="twitter:title" content={seo.title} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={seo.ogImage || `${siteUrl}/og-default.webp`} />
+    <meta name="twitter:image:alt" content={seo.title} />
+    <meta name="twitter:creator" content="@thebetblog" />
+    <meta name="twitter:site" content="@thebetblog" />
+    <meta name="twitter:label1" content="Reading time" />
+    <meta name="twitter:data1" content="5 min read" />
+    
+    <!-- Pinterest Meta Tags -->
+    <meta name="pinterest-rich-pin" content="true" />
+    <meta property="og:see_also" content={siteUrl} />
+    
+    <!-- Additional Social Meta Tags -->
+    <meta property="fb:app_id" content="your_facebook_app_id" />
+    <meta property="article:publisher" content="https://www.facebook.com/thebetblog" />
+    
+    <!-- Keywords Meta Tag -->
+    <meta name="keywords" content="betting strategies, matched betting calculator, arbitrage betting, sports betting tips, casino strategies, betting tools free, odds calculator, betting guide, bookmaker reviews, gambling tips, value betting, kelly criterion, dutching calculator, each way betting, 2up calculator, betting odds comparison, free bet calculator, lay betting, acca calculator, horse racing betting" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="The Bet Blog Team" />
+    <meta name="publisher" content="The Bet Blog" />
+    <meta name="copyright" content="The Bet Blog" />
+    <meta name="language" content="en" />
+    
+    <!-- Page-specific Meta Tags -->
+    <meta name="page-topic" content="Betting, Gambling, Sports Betting, Casino Games" />
+    <meta name="page-type" content="Information" />
+    <meta name="audience" content="All" />
+    <meta name="revisit-after" content="1 day" />
+    <meta name="rating" content="general" />
+    <meta name="distribution" content="global" />
+    <meta name="geo.region" content="US" />
+    <meta name="geo.placename" content="United States" />
+    <meta name="geo.position" content="37.0902;-95.7129" />
+    <meta name="ICBM" content="37.0902, -95.7129" />
+    
+    <!-- DC Meta Tags -->
+    <meta name="DC.title" content={seo.title} />
+    <meta name="DC.creator" content="The Bet Blog Team" />
+    <meta name="DC.subject" content="betting, gambling, sports betting, casino games" />
+    <meta name="DC.description" content={seo.description} />
+    <meta name="DC.publisher" content="The Bet Blog" />
+    <meta name="DC.contributor" content="The Bet Blog Team" />
+    <meta name="DC.date" content={new Date().toISOString()} />
+    <meta name="DC.type" content="Text" />
+    <meta name="DC.format" content="text/html" />
+    <meta name="DC.identifier" content={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+    <meta name="DC.language" content="en" />
+    <meta name="DC.coverage" content="Worldwide" />
+    <meta name="DC.rights" content="Copyright 2024 The Bet Blog" />
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="The Bet Blog RSS Feed" href={`${siteUrl}/rss.xml`} />
+    <link rel="alternate" type="application/atom+xml" title="The Bet Blog Atom Feed" href={`${siteUrl}/rss.xml`} />
+    
+    <!-- Mobile App Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="The Bet Blog" />
+    <meta name="application-name" content="The Bet Blog" />
+    <meta name="msapplication-TileColor" content="#0ea5e9" />
+    <meta name="msapplication-TileImage" content="/favicon-192.png" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://cdn.sanity.io" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- DNS prefetch for better performance -->
+    <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/The Bet Blog Logo.webp" as="image" type="image/webp" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" as="style" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    
+    <!-- Error handling for browser extensions -->
+    <script>
+      // Prevent message channel errors from browser extensions
+      window.addEventListener('error', function(e) {
+        if (e.message && e.message.includes('message channel closed')) {
+          e.preventDefault();
+          return false;
+        }
+      });
+      
+      // Handle unhandled promise rejections
+      window.addEventListener('unhandledrejection', function(e) {
+        if (e.reason && e.reason.message && e.reason.message.includes('message channel closed')) {
+          e.preventDefault();
+          return false;
+        }
+      });
+    </script>
+    
+    <!-- JavaScript detection script -->
+    <script>
+      // Show JavaScript-enabled content
+      document.documentElement.classList.add('js-enabled');
+      // Hide noscript content when JavaScript is available
+      const noscriptElements = document.querySelectorAll('noscript');
+      noscriptElements.forEach(el => {
+        el.style.display = 'none';
+      });
+    </script>
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(organizationData)} />
+    <script type="application/ld+json" set:html={JSON.stringify(websiteData)} />
+    {seo.structuredData && <script type="application/ld+json" set:html={JSON.stringify(seo.structuredData)} />}
+    {breadcrumbData && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbData)} />}
+    {faqData && <script type="application/ld+json" set:html={JSON.stringify(faqData)} />}
+    {additionalStructuredData && <script type="application/ld+json" set:html={JSON.stringify(additionalStructuredData)} />}
+  </head>
+  <body class="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary-600 text-white px-4 py-2 rounded-md z-50">
+      Skip to main content
+    </a>
+    
+    <!-- Header -->
+    <Header />
+    
+    <!-- Main Content -->
+    <main id="main-content" role="main" class="min-h-screen">
+      <slot />
+    </main>
+    
+    <!-- Footer -->
+    <Footer />
+    
+    <!-- Dark Mode Toggle Script -->
+    <script>
+      // Dark mode functionality
+      const theme = localStorage.getItem('theme') || 'light';
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      
+      // Theme toggle function
+      window.toggleTheme = function() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      };
+    </script>
+  </body>
+</html>

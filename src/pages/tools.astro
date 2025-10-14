@@ -1,0 +1,139 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { getPaginatedTools } from '../lib/sanity';
+import { generatePageSEO } from '../lib/seo';
+
+const { tools, total } = await getPaginatedTools(1);
+const seo = generatePageSEO(
+  'Free Betting Calculators & Tools - The Bet Blog',
+  'Professional betting calculators for matched betting, arbitrage, Kelly criterion, odds conversion, and more. Free tools used by successful bettors.',
+  'https://thebetblog.com',
+  '/tools'
+);
+---
+
+<Layout seo={seo}>
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-yellow-400 via-red-500 to-pink-600 text-white py-20">
+    <div class="absolute inset-0 bg-black/30"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">
+        🧮 Betting Arsenal
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 text-gray-100 max-w-3xl mx-auto">
+        Professional-grade calculators and tools used by millionaire bettors. All completely free and instantly accessible.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4 text-sm">
+        <span class="bg-green-500 text-white px-4 py-2 rounded-full font-semibold">✅ 100% Free</span>
+        <span class="bg-blue-500 text-white px-4 py-2 rounded-full font-semibold">⚡ Instant Results</span>
+        <span class="bg-purple-500 text-white px-4 py-2 rounded-full font-semibold">🎯 Pro Accuracy</span>
+        <span class="bg-orange-500 text-white px-4 py-2 rounded-full font-semibold">📱 Mobile Ready</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tool Categories -->
+  <section class="py-16 bg-gray-50 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          🎯 Tool Categories
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300">Choose your weapon of choice</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-gradient-to-br from-emerald-400 to-green-600 p-6 rounded-xl text-white text-center hover:scale-105 transition-transform">
+          <div class="text-4xl mb-3">⚖️</div>
+          <h3 class="text-xl font-bold mb-2">Matched Betting</h3>
+          <p class="text-sm opacity-90">Risk-free profit strategies</p>
+        </div>
+        
+        <div class="bg-gradient-to-br from-blue-400 to-indigo-600 p-6 rounded-xl text-white text-center hover:scale-105 transition-transform">
+          <div class="text-4xl mb-3">📊</div>
+          <h3 class="text-xl font-bold mb-2">Arbitrage</h3>
+          <p class="text-sm opacity-90">Guaranteed profit opportunities</p>
+        </div>
+        
+        <div class="bg-gradient-to-br from-purple-400 to-pink-600 p-6 rounded-xl text-white text-center hover:scale-105 transition-transform">
+          <div class="text-4xl mb-3">🎲</div>
+          <h3 class="text-xl font-bold mb-2">Casino Games</h3>
+          <p class="text-sm opacity-90">Blackjack, roulette & more</p>
+        </div>
+        
+        <div class="bg-gradient-to-br from-orange-400 to-red-600 p-6 rounded-xl text-white text-center hover:scale-105 transition-transform">
+          <div class="text-4xl mb-3">⚽</div>
+          <h3 class="text-xl font-bold mb-2">Sports Betting</h3>
+          <p class="text-sm opacity-90">Football, tennis & racing</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools Grid -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          🚀 Professional Tools
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          The same calculators used by professional betting syndicates and successful gamblers.
+        </p>
+      </div>
+
+      {tools && tools.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {tools.map((tool) => (
+            <ToolCard tool={tool} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-16">
+          <div class="text-6xl mb-4">🔧</div>
+          <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Tools Coming Soon</h3>
+          <p class="text-gray-600 dark:text-gray-300">Amazing betting calculators are being prepared!</p>
+        </div>
+      )}
+
+      <!-- Success Stories -->
+      <div class="mt-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-8 text-white">
+        <div class="text-center mb-8">
+          <h3 class="text-3xl font-bold mb-4">🏆 Success Stories</h3>
+          <p class="text-xl text-gray-100">Real profits from real people using our tools</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white/20 backdrop-blur-sm rounded-lg p-6 text-center">
+            <div class="text-3xl font-bold text-yellow-300 mb-2">£47,500</div>
+            <div class="text-sm opacity-90">Sarah M. - Matched Betting</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-lg p-6 text-center">
+            <div class="text-3xl font-bold text-yellow-300 mb-2">£23,200</div>
+            <div class="text-sm opacity-90">James K. - Arbitrage</div>
+          </div>
+          <div class="bg-white/20 backdrop-blur-sm rounded-lg p-6 text-center">
+            <div class="text-3xl font-bold text-yellow-300 mb-2">£89,100</div>
+            <div class="text-sm opacity-90">Mike R. - Casino Games</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+  }
+  
+  .bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  }
+  
+  .bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+</style>

@@ -326,6 +326,9 @@ export const queries = {
   // Get all post slugs for static generation
   allPostSlugs: `*[_type == "post" && defined(publishedAt)].slug.current`,
 
+  // Hindi posts
+  allHindiPostSlugs: `*[_type == "hindiPost" && defined(publishedAt)].slug.current`,
+
   // Get all tool slugs for static generation
   allToolSlugs: `*[_type == "tool" && defined(publishedAt)].slug.current`,
 
@@ -452,6 +455,10 @@ export async function getAllPostSlugs() {
 
 export async function getAllToolSlugs() {
   return await client.fetch(queries.allToolSlugs);
+}
+
+export async function getAllHindiPostSlugs() {
+  return await client.fetch(queries.allHindiPostSlugs);
 }
 
 export async function getAllCategorySlugs() {

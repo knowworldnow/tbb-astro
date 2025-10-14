@@ -1,0 +1,83 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PortableText from '../../components/PortableText.tsx';
+import { client } from '../../lib/sanity';
+import { generatePostSEO } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const slugs: string[] = await client.fetch(`*[_type=="hindiPost" && defined(publishedAt)].slug.current`);
+  return slugs.map((slug) => ({ params: { slug }, props: { slug } }));
+}
+
+const { slug } = Astro.params;
+const post = await client.fetch(`*[_type=="hindiPost" && slug.current==$slug][0]{
+  _id, title, slug, metaTitle, metaDescription, mainImage{image,alt,caption}, author->{name,slug, image{asset,alt}}, categories[]->{title,slug}, publishedAt, _updatedAt, keyTakeaways, body, faq
+}`, { slug });
+
+if (!post) {
+  return Astro.redirect('/404');
+}
+
+// Build SEO in Hindi
+const seo = generatePostSEO(post, 'https://thebetblog.com');
+seo.canonical = `https://thebetblog.com/hi/${slug}/`;
+seo.structuredData.mainEntityOfPage['@id'] = seo.canonical;
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'हिंदी', url: '/hi/' },
+  { name: post.title, url: `/hi/${slug}/` },
+];
+
+function parseJsonArray(value: unknown) {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') { try { const p = JSON.parse(value as string); return Array.isArray(p) ? p : []; } catch { return []; } }
+  return [];
+}
+
+const keyTakeaways = parseJsonArray((post as any).keyTakeaways);
+const faq = parseJsonArray((post as any).faq);
+---
+
+<Layout seo={seo} breadcrumbs={breadcrumbs} faq={faq}>
+  <article class="py-16" lang="hi">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">{post.title}</h1>
+
+      <!-- Key Takeaways -->
+      {keyTakeaways && keyTakeaways.length > 0 && (
+        <div class="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-xl p-6 mb-8">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">मुख्य बिंदु</h3>
+          <ul class="space-y-2">
+            {keyTakeaways.map((t) => (
+              <li class="flex items-start space-x-3">
+                <span class="text-emerald-600 mt-1">✓</span>
+                <span class="text-gray-700 dark:text-gray-300">{t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div class="prose prose-lg max-w-none dark:prose-invert">
+        <PortableText content={post.body} />
+      </div>
+
+      {faq && faq.length > 0 && (
+        <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">अक्सर पूछे जाने वाले प्रश्न</h3>
+          <div class="space-y-4">
+            {faq.map((item) => (
+              <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">{item.question}</h4>
+                <div class="text-gray-700 dark:text-gray-300 leading-relaxed prose dark:prose-invert" set:html={item.answer}></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </article>
+</Layout>
+
+

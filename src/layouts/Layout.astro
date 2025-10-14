@@ -123,7 +123,7 @@ const faqData = faq && Array.isArray(faq) && faq.length > 0 ? {
 ---
 
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang={(Astro.url.pathname.startsWith('/hi/')) ? 'hi' : 'en'} class="h-full">
   <head>
     <!-- Basic Meta Tags -->
     <meta charset="UTF-8" />
@@ -138,10 +138,16 @@ const faqData = faq && Array.isArray(faq) && faq.length > 0 ? {
     <link rel="canonical" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
     
     <!-- Alternate Language Tags (hreflang for international SEO) -->
-    <link rel="alternate" hreflang="en" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
-    <link rel="alternate" hreflang="en-US" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
-    <link rel="alternate" hreflang="en-GB" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
     <link rel="alternate" hreflang="x-default" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+    {Astro.url.pathname.startsWith('/hi/') ? (
+      <link rel="alternate" hreflang="hi" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+    ) : (
+      <>
+        <link rel="alternate" hreflang="en" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+        <link rel="alternate" hreflang="en-US" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+        <link rel="alternate" hreflang="en-GB" href={seo.canonical || `${siteUrl}${Astro.url.pathname}`} />
+      </>
+    )}
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:type" content={seo.ogType || 'website'} />

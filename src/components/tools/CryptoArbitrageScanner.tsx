@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
 import { TrendingUp, RefreshCw, AlertCircle, CheckCircle2, DollarSign, Percent, Clock, TrendingDown, ArrowRight, Settings } from "lucide-react"
 
 interface PriceData {

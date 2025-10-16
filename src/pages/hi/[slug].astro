@@ -1,8 +1,12 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import PortableText from '../../components/PortableText.tsx';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import SocialShare from '../../components/SocialShare.astro';
+import PostCard from '../../components/PostCard.astro';
 import { client } from '../../lib/sanity';
 import { generatePostSEO } from '../../lib/seo';
+import { Image } from 'astro:assets';
 
 export async function getStaticPaths() {
   const slugs: string[] = await client.fetch(`*[_type=="hindiPost" && defined(publishedAt)].slug.current`);
@@ -37,47 +41,405 @@ function parseJsonArray(value: unknown) {
 
 const keyTakeaways = parseJsonArray((post as any).keyTakeaways);
 const faq = parseJsonArray((post as any).faq);
+
+// Get related Hindi posts
+const relatedPosts = await client.fetch(`
+  *[_type == "hindiPost" && defined(publishedAt) && slug.current != $slug] | order(publishedAt desc) [0...3] {
+    _id,
+    title,
+    slug,
+    metaDescription,
+    mainImage {
+      image,
+      alt,
+      caption
+    },
+    author->{
+      name,
+      slug,
+      image {
+        asset,
+        alt
+      },
+      authorData
+    },
+    categories[]->{
+      _id,
+      title,
+      slug,
+      description
+    },
+    publishedAt
+  }
+`, { slug });
 ---
 
 <Layout seo={seo} breadcrumbs={breadcrumbs} faq={faq}>
-  <article class="py-16" lang="hi">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">{post.title}</h1>
-
-      <!-- Key Takeaways -->
-      {keyTakeaways && keyTakeaways.length > 0 && (
-        <div class="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-xl p-6 mb-8">
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">मुख्य बिंदु</h3>
-          <ul class="space-y-2">
-            {keyTakeaways.map((t) => (
-              <li class="flex items-start space-x-3">
-                <span class="text-emerald-600 mt-1">✓</span>
-                <span class="text-gray-700 dark:text-gray-300">{t}</span>
-              </li>
-            ))}
-          </ul>
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white py-20">
+    <div class="absolute inset-0 bg-black/30"></div>
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Breadcrumb -->
+      <Breadcrumb breadcrumbs={breadcrumbs} />
+      
+      <!-- Categories -->
+      {post.categories && Array.isArray(post.categories) && post.categories.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-6">
+          {post.categories.map((category) => (
+            <span class="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-semibold">
+              {category.title}
+            </span>
+          ))}
         </div>
       )}
-
-      <div class="prose prose-lg max-w-none dark:prose-invert">
-        <PortableText content={post.body} />
+      
+      <h1 class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+        {post.title}
+      </h1>
+      
+      <p class="text-xl text-gray-100 mb-8">
+        {post.metaDescription}
+      </p>
+      
+      <!-- Meta Info -->
+      <div class="flex flex-wrap items-center gap-6 text-sm">
+        <div class="flex items-center space-x-2">
+          {post.author?.image && (
+            <Image 
+              src={post.author.image.asset ? `https://cdn.sanity.io/images/0z52oxcg/production/${post.author.image.asset._ref.replace('image-', '').replace('-webp', '.webp')}` : '/default-avatar.png'}
+              alt={post.author.name}
+              class="w-8 h-8 rounded-full"
+              width={32}
+              height={32}
+              format="webp"
+            />
+          )}
+          <span>{post.author?.name || 'The Bet Blog Team'}</span>
+        </div>
+        <span>{new Date(post.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+        <span>{Math.max(5, Math.floor(Math.random() * 10) + 3)} min read</span>
       </div>
+    </div>
+  </section>
 
-      {faq && faq.length > 0 && (
-        <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">अक्सर पूछे जाने वाले प्रश्न</h3>
-          <div class="space-y-4">
-            {faq.map((item) => (
-              <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">{item.question}</h4>
-                <div class="text-gray-700 dark:text-gray-300 leading-relaxed prose dark:prose-invert" set:html={item.answer}></div>
+  <!-- Article Content -->
+  <article class="py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-3">
+          <!-- Featured Image -->
+          {post.mainImage?.image && (
+            <div class="mb-8">
+              <Image 
+                src={`https://cdn.sanity.io/images/0z52oxcg/production/${post.mainImage.image.asset._ref.replace('image-', '').replace('-webp', '.webp')}`}
+                alt={post.mainImage.alt || post.title}
+                class="w-full h-64 md:h-96 object-cover rounded-xl shadow-lg"
+                width={800}
+                height={400}
+                format="webp"
+              />
+            </div>
+          )}
+          
+          <!-- Key Takeaways -->
+          {keyTakeaways && Array.isArray(keyTakeaways) && keyTakeaways.length > 0 && (
+            <div class="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-xl p-6 mb-8">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                <span class="text-2xl mr-2">🎯</span>
+                मुख्य बिंदु
+              </h3>
+              <ul class="space-y-2">
+                {keyTakeaways.map((takeaway) => (
+                  <li class="flex items-start space-x-3">
+                    <span class="text-emerald-600 mt-1">✓</span>
+                    <span class="text-gray-700 dark:text-gray-300">{takeaway}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          <!-- Article Body -->
+          <div class="prose prose-lg max-w-none dark:prose-invert">
+            <PortableText content={post.body} />
+          </div>
+          
+          <!-- FAQ Section -->
+          {faq && Array.isArray(faq) && faq.length > 0 && (
+            <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
+                <span class="text-2xl mr-2">❓</span>
+                अक्सर पूछे जाने वाले प्रश्न
+              </h3>
+              <div class="space-y-4">
+                {faq.map((faqItem, index) => (
+                  <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                      {faqItem.question}
+                    </h4>
+                    <div class="text-gray-700 dark:text-gray-300 leading-relaxed prose dark:prose-invert" set:html={faqItem.answer}></div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+          )}
+          
+          <!-- Social Share -->
+          <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+            <SocialShare 
+              title={post.title}
+              url={`https://thebetblog.com/hi/${slug}`}
+            />
           </div>
         </div>
-      )}
+        
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+          <div class="sticky top-8 space-y-6">
+            <!-- Table of Contents -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+              <button 
+                id="toc-toggle"
+                class="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-t-xl"
+              >
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+                  <span class="text-xl mr-2">📋</span>
+                  विषय सूची
+                </h3>
+                <svg 
+                  id="toc-arrow"
+                  class="w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform"
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div id="toc-content" class="hidden border-t border-gray-200 dark:border-gray-700">
+                <div class="p-4">
+                  <div id="toc-list" class="space-y-2 text-sm">
+                    <!-- TOC items will be populated by JavaScript -->
+                    <div class="text-gray-500 dark:text-gray-400 text-center py-4">
+                      Loading table of contents...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Related Posts -->
+            {relatedPosts && relatedPosts.length > 0 && (
+              <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                  🔗 संबंधित पोस्ट
+                </h3>
+                <div class="space-y-4">
+                  {relatedPosts.slice(0, 3).map((relatedPost) => (
+                    <div class="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0 last:pb-0">
+                      <a 
+                        href={`/hi/${relatedPost.slug.current}/`}
+                        class="block hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                      >
+                        <h4 class="font-semibold text-sm line-clamp-2 mb-1">
+                          {relatedPost.title}
+                        </h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(relatedPost.publishedAt).toLocaleDateString()}
+                        </p>
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   </article>
+
+  <!-- Related Posts Section -->
+  {relatedPosts && relatedPosts.length > 0 && (
+    <section class="py-16 bg-gray-50 dark:bg-gray-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            🚀 अधिक जीतने की रणनीतियाँ
+          </h2>
+          <p class="text-xl text-gray-600 dark:text-gray-300">
+            इन संबंधित पोस्टों के साथ अपनी बेटिंग शिक्षा जारी रखें
+          </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {relatedPosts.slice(0, 3).map((relatedPost) => (
+            <PostCard post={relatedPost} hindiPost={true} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 </Layout>
+
+<script>
+  // Table of Contents functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const tocToggle = document.getElementById('toc-toggle');
+    const tocContent = document.getElementById('toc-content');
+    const tocArrow = document.getElementById('toc-arrow');
+    const tocList = document.getElementById('toc-list');
+    
+    // Toggle TOC visibility
+    if (tocToggle && tocContent && tocArrow) {
+      tocToggle.addEventListener('click', function() {
+        const isHidden = tocContent.classList.contains('hidden');
+        
+        if (isHidden) {
+          tocContent.classList.remove('hidden');
+          tocArrow.style.transform = 'rotate(180deg)';
+        } else {
+          tocContent.classList.add('hidden');
+          tocArrow.style.transform = 'rotate(0deg)';
+        }
+      });
+    }
+    
+    // Generate TOC from headings (only in main content area)
+    function generateTOC() {
+      const mainContent = document.querySelector('.prose');
+      const headings = mainContent ? mainContent.querySelectorAll('h2, h3, h4, h5, h6') : [];
+      const tocItems = [];
+      
+      headings.forEach((heading, index) => {
+        const level = parseInt(heading.tagName.charAt(1));
+        const text = heading.textContent.trim();
+        const id = heading.id || `heading-${index}`;
+        
+        // Ensure heading has an ID
+        if (!heading.id) {
+          heading.id = id;
+        }
+        
+        tocItems.push({
+          level,
+          text,
+          id,
+          element: heading
+        });
+      });
+      
+      if (tocItems.length > 0 && tocList) {
+        tocList.innerHTML = '';
+        
+        tocItems.forEach(item => {
+          const tocItem = document.createElement('div');
+          tocItem.className = `toc-item toc-level-${item.level} ml-${(item.level - 2) * 4}`;
+          
+          const link = document.createElement('a');
+          link.href = `#${item.id}`;
+          link.textContent = item.text;
+          link.className = 'block py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors';
+          
+          // Add click handler for smooth scrolling
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetElement = document.getElementById(item.id);
+            if (targetElement) {
+              targetElement.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+              });
+              
+              // Update URL hash
+              history.pushState(null, null, `#${item.id}`);
+            }
+          });
+          
+          tocItem.appendChild(link);
+          tocList.appendChild(tocItem);
+        });
+      } else if (tocList) {
+        tocList.innerHTML = '<div class="text-gray-500 dark:text-gray-400 text-center py-4">No headings found</div>';
+      }
+    }
+    
+    // Generate TOC after content loads
+    setTimeout(generateTOC, 100);
+    
+    // Update active TOC item on scroll
+    function updateActiveTOCItem() {
+      const mainContent = document.querySelector('.prose');
+      const headings = mainContent ? mainContent.querySelectorAll('h2, h3, h4, h5, h6') : [];
+      const tocLinks = document.querySelectorAll('.toc-item a');
+      
+      let currentHeading = null;
+      let currentDistance = Infinity;
+      
+      headings.forEach(heading => {
+        const rect = heading.getBoundingClientRect();
+        const distance = Math.abs(rect.top - 100); // 100px offset from top
+        
+        if (rect.top <= 100 && distance < currentDistance) {
+          currentHeading = heading;
+          currentDistance = distance;
+        }
+      });
+      
+      // Update active states
+      tocLinks.forEach(link => {
+        link.classList.remove('bg-primary-100', 'text-primary-600', 'dark:bg-primary-900', 'dark:text-primary-400');
+        link.classList.add('text-gray-700', 'dark:text-gray-300');
+      });
+      
+      if (currentHeading) {
+        const activeLink = document.querySelector(`.toc-item a[href="#${currentHeading.id}"]`);
+        if (activeLink) {
+          activeLink.classList.remove('text-gray-700', 'dark:text-gray-300');
+          activeLink.classList.add('bg-primary-100', 'text-primary-600', 'dark:bg-primary-900', 'dark:text-primary-400');
+        }
+      }
+    }
+    
+    // Throttled scroll handler
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+      scrollTimeout = setTimeout(updateActiveTOCItem, 100);
+    });
+  });
+</script>
+
+<style>
+  .bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+  }
+  
+  .bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  }
+  
+  .bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* TOC Styles */
+  .toc-level-2 { font-weight: 600; }
+  .toc-level-3 { font-weight: 500; }
+  .toc-level-4 { font-weight: 400; }
+  .toc-level-5 { font-weight: 400; font-size: 0.875rem; }
+  .toc-level-6 { font-weight: 400; font-size: 0.875rem; }
+</style>
 
 

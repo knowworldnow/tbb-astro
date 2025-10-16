@@ -45,7 +45,7 @@ export const GET: APIRoute = async () => {
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>The Bet Blog - Expert Betting Strategies & Free Tools</title>
+    <title>The Bet Blog - Expert Betting Strategies &amp; Free Tools</title>
     <description>Expert betting strategies, free calculators, and trusted bookmaker reviews. Learn matched betting, arbitrage, and casino games with our comprehensive guides and tools.</description>
     <link>${site}</link>
     <language>en-us</language>

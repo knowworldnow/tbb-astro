@@ -1,20 +1,30 @@
 import type { APIRoute } from 'astro';
-import { getPosts, getTools } from '../lib/sanity';
+import { getPosts, getTools, client } from '../lib/sanity';
 
 export const GET: APIRoute = async () => {
   const site = 'https://thebetblog.com';
   const currentDate = new Date().toISOString();
   
-  // Get latest posts and tools
-  const [posts, tools] = await Promise.all([
+  // Get latest posts, tools, and Hindi posts
+  const [posts, tools, hindiPosts] = await Promise.all([
     getPosts({ limit: 25 }),
-    getTools({ limit: 25 })
+    getTools({ limit: 25 }),
+    client.fetch(`*[_type == "hindiPost" && defined(publishedAt)] | order(publishedAt desc) [0...25] {
+      _id,
+      title,
+      slug,
+      metaTitle,
+      metaDescription,
+      author->{name},
+      publishedAt
+    }`)
   ]);
   
   // Combine and sort by publishedAt
   const allContent = [
     ...posts.map((post) => ({ ...post, type: 'post' as const })),
     ...tools.map((tool) => ({ ...tool, type: 'tool' as const })),
+    ...hindiPosts.map((post) => ({ ...post, type: 'hindiPost' as const })),
   ]
     .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     .slice(0, 50); // Limit to 50 total items
@@ -23,11 +33,19 @@ export const GET: APIRoute = async () => {
     .map((item) => {
       const url = item.type === 'post' 
         ? `${site}/${item.slug.current}/` 
-        : `${site}/tools/${item.slug.current}/`;
+        : item.type === 'tool'
+        ? `${site}/tools/${item.slug.current}/`
+        : `${site}/hi/${item.slug.current}/`;
       
       const title = item.metaTitle || item.title;
       const description = item.metaDescription || `Read ${item.title} on The Bet Blog.`;
       const pubDate = new Date(item.publishedAt).toUTCString();
+      
+      const category = item.type === 'post' 
+        ? 'Blog Post' 
+        : item.type === 'tool'
+        ? 'Betting Tool'
+        : 'Hindi Post';
       
       return `
   <item>
@@ -36,7 +54,7 @@ export const GET: APIRoute = async () => {
     <link>${url}</link>
     <guid isPermaLink="true">${url}</guid>
     <pubDate>${pubDate}</pubDate>
-    <category><![CDATA[${item.type === 'post' ? 'Blog Post' : 'Betting Tool'}]]></category>
+    <category><![CDATA[${category}]]></category>
     ${item.author?.name ? `<author>${item.author.name}</author>` : ''}
   </item>`;
     })

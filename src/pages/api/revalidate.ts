@@ -49,6 +49,10 @@ export const POST: APIRoute = async ({ request }) => {
       revalidatedPaths.push(`/tools/${slug}`);
       revalidatedPaths.push('/tools');
       revalidatedPaths.push('/');
+    } else if (documentType === 'hindiPost' && slug) {
+      revalidatedPaths.push(`/hi/${slug}`);
+      revalidatedPaths.push('/hi');
+      revalidatedPaths.push('/');
     } else if (documentType === 'category' && slug) {
       revalidatedPaths.push(`/category/${slug}`);
       revalidatedPaths.push('/');

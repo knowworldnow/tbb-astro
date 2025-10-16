@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAllPostSlugs, getAllToolSlugs, getAllCategorySlugs, getAllAuthorSlugs } from '../lib/sanity';
+import { getAllPostSlugs, getAllToolSlugs, getAllCategorySlugs, getAllAuthorSlugs, getAllHindiPostSlugs } from '../lib/sanity';
 
 export const GET: APIRoute = async () => {
   const site = 'https://thebetblog.com';
@@ -10,14 +10,16 @@ export const GET: APIRoute = async () => {
     { url: '/', priority: '1.0', changefreq: 'daily' },
     { url: '/posts/', priority: '0.9', changefreq: 'daily' },
     { url: '/tools/', priority: '0.9', changefreq: 'daily' },
+    { url: '/hi/', priority: '0.9', changefreq: 'daily' },
     { url: '/about-us/', priority: '0.7', changefreq: 'monthly' },
     { url: '/contact-us/', priority: '0.7', changefreq: 'monthly' },
   ];
   
   // Dynamic pages
-  const [postSlugs, toolSlugs, categorySlugs, authorSlugs] = await Promise.all([
+  const [postSlugs, toolSlugs, hindiPostSlugs, categorySlugs, authorSlugs] = await Promise.all([
     getAllPostSlugs(),
     getAllToolSlugs(),
+    getAllHindiPostSlugs(),
     getAllCategorySlugs(),
     getAllAuthorSlugs(),
   ]);
@@ -43,6 +45,14 @@ export const GET: APIRoute = async () => {
   ${toolSlugs.map(slug => `
   <url>
     <loc>${site}/tools/${slug}/</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`).join('')}
+  
+  ${hindiPostSlugs.map(slug => `
+  <url>
+    <loc>${site}/hi/${slug}/</loc>
     <lastmod>${currentDate}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

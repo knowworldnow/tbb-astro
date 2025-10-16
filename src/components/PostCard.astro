@@ -6,13 +6,15 @@ import { Image } from 'astro:assets';
 
 export interface Props {
   post: Post;
+  hindiPost?: boolean;
 }
 
-const { post } = Astro.props;
+const { post, hindiPost = false } = Astro.props;
 const imageUrl = post.mainImage?.image ? urlFor(post.mainImage.image).width(400).height(250).url() : null;
 const authorName = post.author?.name || 'The Bet Blog Team';
 const publishedDate = formatDate(post.publishedAt);
 const readingTime = Math.max(1, Math.floor(Math.random() * 8) + 3); // Mock reading time
+const postUrl = hindiPost ? `/hi/${post.slug.current}/` : `/${post.slug.current}/`;
 ---
 
 <article class="bg-white dark:bg-gray-900 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 group">
@@ -46,7 +48,7 @@ const readingTime = Math.max(1, Math.floor(Math.random() * 8) + 3); // Mock read
     
     <!-- Title -->
     <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-      <a href={`/${post.slug.current}/`} class="hover:underline">
+      <a href={postUrl} class="hover:underline">
         {post.title}
       </a>
     </h3>

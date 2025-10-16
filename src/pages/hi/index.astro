@@ -1,0 +1,127 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { client } from '../../lib/sanity';
+import { generatePageSEO } from '../../lib/seo';
+
+const posts = await client.fetch(`
+  *[_type == "hindiPost" && defined(publishedAt)] | order(publishedAt desc) {
+    _id,
+    title,
+    slug,
+    metaTitle,
+    metaDescription,
+    mainImage {
+      image,
+      alt,
+      caption
+    },
+    author->{
+      name,
+      slug,
+      image {
+        asset,
+        alt
+      },
+      authorData
+    },
+    categories[]->{
+      _id,
+      title,
+      slug,
+      description
+    },
+    publishedAt,
+    keyTakeaways,
+    faq
+  }
+`);
+
+const seo = generatePageSEO(
+  'Hindi Betting Posts - The Bet Blog',
+  'हिंदी में बेटिंग रणनीतियाँ, गाइड और टिप्स। मैच्ड बेटिंग, आर्बिट्रेज और कैसीनो गेम्स के बारे में जानें।',
+  'https://thebetblog.com',
+  '/hi'
+);
+---
+
+<Layout seo={seo}>
+  <!-- Hero Section -->
+  <section class="relative bg-gradient-to-br from-emerald-500 via-blue-600 to-purple-700 text-white py-20">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+        🇮🇳 हिंदी बेटिंग गाइड
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 text-gray-100 max-w-3xl mx-auto">
+        हिंदी में बेटिंग रणनीतियाँ, मैच्ड बेटिंग गाइड, आर्बिट्रेज टिप्स और कैसीनो गेम्स के बारे में विस्तृत जानकारी।
+      </p>
+      <div class="flex flex-wrap justify-center gap-4 text-sm">
+        <span class="bg-yellow-400 text-black px-4 py-2 rounded-full font-semibold">💰 मैच्ड बेटिंग</span>
+        <span class="bg-green-400 text-black px-4 py-2 rounded-full font-semibold">⚡ आर्बिट्रेज</span>
+        <span class="bg-blue-400 text-white px-4 py-2 rounded-full font-semibold">🎲 कैसीनो गेम्स</span>
+        <span class="bg-purple-400 text-white px-4 py-2 rounded-full font-semibold">🏆 स्पोर्ट्स बेटिंग</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Posts Grid -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          🚀 हिंदी बेटिंग पोस्ट्स
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          पेशेवर जुआरियों द्वारा उपयोग की जाने वाली सबसे लाभदायक बेटिंग विधियों की खोज करें।
+        </p>
+      </div>
+
+      {posts && posts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.map((post) => (
+            <PostCard post={post} hindiPost={true} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-16">
+          <div class="text-6xl mb-4">📚</div>
+          <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">अभी तक कोई पोस्ट नहीं</h3>
+          <p class="text-gray-600 dark:text-gray-300">जल्द ही अद्भुत बेटिंग कंटेंट के लिए वापस आएं!</p>
+        </div>
+      )}
+
+      <!-- CTA Section -->
+      <div class="mt-16 text-center">
+        <div class="bg-gradient-to-r from-emerald-500 to-blue-600 rounded-2xl p-8 text-white">
+          <h3 class="text-3xl font-bold mb-4">🎯 जीतना शुरू करने के लिए तैयार हैं?</h3>
+          <p class="text-xl mb-6 text-gray-100">हमारी सिद्ध रणनीतियों का उपयोग करने वाले हजारों सफल जुआरियों में शामिल हों</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/tools" class="bg-yellow-400 text-black px-8 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
+              🧮 मुफ्त कैलकुलेटर
+            </a>
+            <a href="/about" class="bg-white text-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              📖 अधिक जानें
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+  }
+  
+  .bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  }
+  
+  .bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+</style>
+

@@ -2,6 +2,7 @@
 import type { SEOData } from '../lib/seo';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import BackToTop from '../components/BackToTop.astro';
 import { Image } from 'astro:assets';
 
 export interface Props {
@@ -312,6 +313,9 @@ const faqData = faq && Array.isArray(faq) && faq.length > 0 ? {
     
     <!-- Footer -->
     <Footer />
+    
+    <!-- Back to Top Button -->
+    <BackToTop />
     
     <!-- Dark Mode Toggle Script -->
     <script>
